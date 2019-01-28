@@ -5,9 +5,11 @@ export default class BackDateForm extends Component {
 
     static propTypes = {
         show: PropTypes.number,
+        speed: PropTypes.number,
     };
     static defaultProps = {
         show: 4,
+        speed: .3,
     };
     
     constructor(props){
@@ -24,7 +26,8 @@ export default class BackDateForm extends Component {
     }
     render(){
         let data = ticketInfo.data[0].data[0].detail;
-        // console.log(this.props)
+        let speed = this.props.speed;
+        console.log(this.props.speed);
         // console.log(ticketInfo.data[0].data)
         // const {go,back}=this.props;
         return(
@@ -34,7 +37,7 @@ export default class BackDateForm extends Component {
                     <div className = "go">去程</div>
                 </div>
                 <div className="backDateData">
-                    <div className="backDataForm">
+                    <div className="backDataForm positionAbsolute" style={{transition:  speed + 's'}}>
                         {
                             data.map((info, index)=>{
                                 return(

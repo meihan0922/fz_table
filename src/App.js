@@ -16,7 +16,7 @@ class App extends Component {
     const {whenClick} = this.props.whenClick;
     return (
       <div className="calendar">
-        <BackDateForm show={show}/>
+        <BackDateForm show={show} speed={speed}/>
         <GoDateForm/>
         <Price slide={slide} show={show} speed={speed} whenClick={whenClick}/>
       </div>

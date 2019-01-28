@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 
 export default class Price extends Component {
-
     static propTypes = {
         show: PropTypes.number,
         slide: PropTypes.number,
@@ -26,9 +25,12 @@ export default class Price extends Component {
         // this.onClick = this.onClick.bind(this);
         this.state = {
             status: ["show1", "show2", "show3", "show4"],
-            rightMove: 0,
-            time: 1,
-            display: ["none", "block"],
+            rightMove: 0, //移動%數
+            time: 1, //儲存左右點擊次數
+            displayRight: 1, //箭頭右 0:displayNone, 1:displayBlock
+            displayLeft: 0, //箭頭左 0:displayNone, 1:displayBlock
+            cross:[], //儲存十字顯示的陣列
+            active: -1 //是否加上active這個class
         }
     }
     
@@ -37,15 +39,16 @@ export default class Price extends Component {
             var classStatus = this.state.status[this.props.show-1];
             return  classStatus;
         }
-        console.log(this.props.show);
+        // console.log(this.props.show);
     }
 
     onClickRight = () => {
         var slideSet = this.props.slide;
         var showSet = this.props.show;
         var right;
-        var settiming;
-        var showDisplay;
+        var settiming = this.state.time-1;
+        var showDisplayR;
+        // var showDisplayL;
         var clickTimes = Math.floor((7-showSet)/slideSet);
         //clickTimes可以按的次數
         //settiming目前在第幾次
@@ -54,22 +57,23 @@ export default class Price extends Component {
         if(this.state.time<=clickTimes){
             settiming = this.state.time+1;
             right = this.state.rightMove + (100/showSet)*slideSet;
-            showDisplay = 1;
+            showDisplayR = 1;
         }else if(this.state.time>clickTimes){
             settiming = clickTimes + 1;
             right = (100 / showSet) * (7-showSet);
-            showDisplay = 1;
+            showDisplayR = 1;
         }
-        if(settiming>clickTimes){
-            showDisplay = 1;
-            document.querySelector(".arrowRight").style.display = "none";
+
+        if(this.state.time===clickTimes){
+            showDisplayR = 0;
         }
-        
-        document.querySelector(".arrowLeft").style.display = this.state.display[showDisplay];
+
         document.querySelector(".priceForm").style.right = right + "%";
         document.querySelector(".backDataForm").style.right = right + "%";
 
         this.setState({
+            displayRight : showDisplayR,
+            displayLeft : 1,
             rightMove : right,
             time :settiming
         })
@@ -81,33 +85,33 @@ export default class Price extends Component {
         var slideSet = this.props.slide;
         var showSet = this.props.show;
         var right;
-        var settiming;
-        var showDisplay;
-
+        var settiming = this.state.time-1;
+        var showDisplayL;
+        
         if(this.state.time>2){
-            showDisplay = 1;
+            showDisplayL = 1;
             settiming = this.state.time-1;
             right = this.state.rightMove -(100/showSet)*slideSet;
-            document.querySelector(".arrowRight").style.display = "block";
         }else if(this.state.time===2){
-            showDisplay = 1;
+            showDisplayL = 1;
             right =  0;
             settiming = 1;
         }
         if(settiming===1){
-            showDisplay = 0;
+            showDisplayL = 0;
         }
-
-        document.querySelector(".arrowLeft").style.display = this.state.display[showDisplay];
         document.querySelector(".priceForm").style.right = right + "%";
         document.querySelector(".backDataForm").style.right = right + "%";
 
         this.setState({
+            displayLeft : showDisplayL,
+            displayRight : 1,
             rightMove : right,
             time :settiming
         })
     }
 
+    //數字三位數加逗號
     toThousands = (num) => {  
         var result = [ ], 
             counter = 0;  
@@ -117,96 +121,64 @@ export default class Price extends Component {
             result.unshift(num[a]);  
             if (!(counter % 3) && a !== 0) { result.unshift(','); }  
         }  
-        return result.join('');  
+        return result.join('');
     }
 
 
     onClick = (e) => {
-        var boxAll = document.querySelectorAll(".priceData");
+        // var boxAll = document.querySelectorAll(".priceData");
         var currentClick = e.target;
         var dataId = currentClick.getAttribute("id");
         var dataIdRow = Math.floor(dataId/7);
         var dataIdCol = dataId % 7 ;
         var row = [];
         var col = [];
-        
+        var choose = [];
         this.props.whenClick(e.target);
 
-        for(var i=0; i<boxAll.length; i++){
-            boxAll[i].classList.remove("cross");
-            boxAll[i].classList.remove("active");
-        }
-
+        //找直行橫列的id值
         for(var x = 0; x < 7; x++){
             row.push(dataIdRow*7 + x );
             col.push(7*x + dataIdCol );
         }
+
+        //合併兩個陣列
+        choose = [...row, ...col];
+      
+        this.setState({
+            cross : choose,
+            active : dataId
+        })
+    }
     
-        row.map((item) => 
-            document.getElementById(item).classList.add("cross")
-        )
-
-        col.map((item)=>
-            document.getElementById(item).classList.add("cross")
-        )
-       
-        currentClick.classList.add('active');
-    }
-    componentDidMount = () => {
-        var speed = this.props.speed;
-        // console.log(speed);
-        var priceForm = document.querySelector(".priceForm");
-        var backDataForm = document.querySelector(".backDataForm");
-        var arrowLeft = document.querySelector(".arrowLeft");
-        var arrowRight = document.querySelector(".arrowRight");
-        var priceFormFunc = function(){
-            priceForm.style.transition = ("right " + speed + "s");
-        }
-        var backDataFormFunc = function(){
-            backDataForm.style.transition = ("right " + speed + "s");
-        }
-
-        priceFormFunc();
-        backDataFormFunc();
-
-        window.addEventListener("resize",function(){
-            var width = document.documentElement.clientWidth;
-            if(width>765){
-                priceForm.style.right = 0;
-                priceForm.style.transition =  ("right " + 0 + "s");
-                backDataForm.style.transition = ("right " + 0 + "s");
-                backDataForm.style.right = 0;
-                arrowLeft.style.display = "none";
-                arrowRight.style.display = "none";
-            }else{
-                priceFormFunc();
-                backDataFormFunc();
-                arrowLeft.style.display = "none";
-                arrowRight.style.display = "block";
-            }
-    })
-    }
     render(){
-        console.log(this.props.slide);
+        // console.log(this.props.slide);
         let data = ticketInfo.data[0];
+        let arrowRight = !!(this.state.displayRight) ? "displayBlock" : "displayNone";
+        let arrowLeft = !!(this.state.displayLeft) ? "displayBlock" : "displayNone";
+        let speed = this.props.speed;
         return(
             <div className="price">
-                <div className="arrowRight displayBlock" onClick={this.onClickRight}>
+                <div className={`arrowRight ${arrowRight}`} onClick={this.onClickRight}>
                     <i className="fas fa-angle-right"></i>
                 </div>
-                <div className={this.state.time===1 ? "displayNone arrowLeft" : "arrowLeft displayBlock"} onClick={this.onClickLeft}>
+                <div className={`arrowLeft ${arrowLeft}`} onClick={this.onClickLeft}>
                     <i className="fas fa-angle-left"></i>
                 </div>
-                <div className="priceForm">
+                <div className="priceForm positionAbsolute" style={{transition: speed + 's'}}>
                     {data.data.map((arr1, index1)=>{
-                            // console.log(arr1);
                             return(
                             <div className="priceRow" key={index1}>
                                 {arr1.detail.map((arr2, index2)=>{
-                                    // console.log(arr2.price)
+                                    let id = index1*7+index2;
+                                    let cross = (this.state.cross.indexOf(id)===-1) ? "" : "cross";
+                                    let active = (String(id)===this.state.active) ? "active" : "";
+                                    console.log(active);
+                                    let pricedata ="priceData " + this.init();
+                                    // let active = 
                                     return(
-                                        <div className={"priceData " + this.init()} id={index1*7+index2}
-                                            key={index1*7+index2} onClick={this.onClick}>
+                                        <div className={`${cross} ${pricedata} ${active}`} id={id}
+                                            key={id} onClick={this.onClick}>
                                             <span className={arr2.cheapest ? "addSaleClass box" : "box"} >
                                                     {Number(arr2.price) ? "$" : ""}{this.toThousands(arr2.price)}
                                                     {Number(arr2.price) ? <span>起</span> : ""}     

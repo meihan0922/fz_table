@@ -80,7 +80,7 @@ $light-color: #ff8e26;
   overflow: hidden;
 
     .priceForm{
-      position: absolute;
+      position: relative;
       top: 0;
       right: 0;
       display: flex;
@@ -90,7 +90,7 @@ $light-color: #ff8e26;
       justify-content: center;
       width: 100%;
       transition:{@include transform();}
-
+      
         .priceRow{
           width: 100%;
           height: auto;
@@ -114,6 +114,7 @@ $light-color: #ff8e26;
     border: 1px solid #fe8b88;
     background: #fff9e3;
   }
+  
 }
 
 .goDate, .backDate, .priceData{
@@ -173,10 +174,10 @@ i{
 }
 .arrowRight, .arrowLeft{
   position: absolute;
-  display: none;
   top: calc(50% - 50px);
   z-index: 1;
   color: #fff;
+  display: none;
   background: hsla(0,0%,67%,.5);
   line-height: 1;
   padding: 13px 3px;
@@ -200,10 +201,11 @@ i{
 .cross{
   background: #f7f7f7;
 }
-.active{
+.priceRow .active{
   border: 1px solid #fe8b88;
   background: #fff9e3;
 }
+
 
 @media screen and (max-width: 768px){
   @for $i from 1 through 4{
@@ -228,5 +230,8 @@ i{
   }
   .displayNone{
     display: none;
+  }
+  .positionAbsolute{
+    position: absolute;
   }
 }
