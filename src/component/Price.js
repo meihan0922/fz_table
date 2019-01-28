@@ -33,7 +33,7 @@ export default class Price extends Component {
     }
     
     init = () => {
-        if(Number(this.props.show) && Number(this.props.show)<5){
+        if(Number(this.props.show)>0 && Number(this.props.show)<5){
             var classStatus = this.state.status[this.props.show-1];
             return  classStatus;
         }
@@ -46,20 +46,26 @@ export default class Price extends Component {
         var right;
         var settiming;
         var showDisplay;
-        if(this.state.time<=Math.floor((7-showSet)/slideSet)){
+        var clickTimes = Math.floor((7-showSet)/slideSet);
+        //clickTimes可以按的次數
+        //settiming目前在第幾次
+        //right右移多少
+        //showDisplay切換display的block和none
+        if(this.state.time<=clickTimes){
             settiming = this.state.time+1;
             right = this.state.rightMove + (100/showSet)*slideSet;
             showDisplay = 1;
-        }else if(this.state.time>Math.floor((7-showSet)/slideSet)){
-            settiming = Math.floor(7-showSet)/slideSet + 1;
+        }else if(this.state.time>clickTimes){
+            settiming = clickTimes + 1;
             right = (100 / showSet) * (7-showSet);
             showDisplay = 1;
         }
-        if(settiming>Math.floor((7-showSet)/slideSet)){
-            showDisplay = 0;
+        if(settiming>clickTimes){
+            showDisplay = 1;
+            document.querySelector(".arrowRight").style.display = "none";
         }
         
-        document.querySelector(".arrowRight").style.display = this.state.display[showDisplay];
+        document.querySelector(".arrowLeft").style.display = this.state.display[showDisplay];
         document.querySelector(".priceForm").style.right = right + "%";
         document.querySelector(".backDataForm").style.right = right + "%";
 
@@ -79,18 +85,17 @@ export default class Price extends Component {
         var showDisplay;
 
         if(this.state.time>2){
-                showDisplay = 1;
-                settiming = this.state.time-1;
-                right = this.state.rightMove -(100/showSet)*slideSet;
-                document.querySelector(".arrowRight").style.display = "block";
+            showDisplay = 1;
+            settiming = this.state.time-1;
+            right = this.state.rightMove -(100/showSet)*slideSet;
+            document.querySelector(".arrowRight").style.display = "block";
         }else if(this.state.time===2){
-                showDisplay = 1;
-                right =  0;
-                settiming = 1;
-                // document.querySelector(".arrowRight").style.display = "block";
+            showDisplay = 1;
+            right =  0;
+            settiming = 1;
         }
         if(settiming===1){
-                showDisplay = 0;
+            showDisplay = 0;
         }
 
         document.querySelector(".arrowLeft").style.display = this.state.display[showDisplay];
@@ -149,7 +154,7 @@ export default class Price extends Component {
     }
     componentDidMount = () => {
         var speed = this.props.speed;
-        console.log(speed);
+        // console.log(speed);
         var priceForm = document.querySelector(".priceForm");
         var backDataForm = document.querySelector(".backDataForm");
         var arrowLeft = document.querySelector(".arrowLeft");
@@ -176,7 +181,7 @@ export default class Price extends Component {
             }else{
                 priceFormFunc();
                 backDataFormFunc();
-                arrowLeft.style.display = "block";
+                arrowLeft.style.display = "none";
                 arrowRight.style.display = "block";
             }
     })
@@ -204,7 +209,7 @@ export default class Price extends Component {
                                             key={index1*7+index2} onClick={this.onClick}>
                                             <span className={arr2.cheapest ? "addSaleClass box" : "box"} >
                                                     {Number(arr2.price) ? "$" : ""}{this.toThousands(arr2.price)}
-                                                    {Number(arr2.price) ? <span>起</span> : ""}         
+                                                    {Number(arr2.price) ? <span>起</span> : ""}     
                                             </span>
                                         </div>
                                     )
