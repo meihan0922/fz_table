@@ -62,7 +62,6 @@ $light-color: #ff8e26;
       position: relative;
       overflow: hidden;
         .backDataForm{
-          position: absolute;
           display: flex;
           flex-flow: row nowrap;
           top: 0;
@@ -80,7 +79,6 @@ $light-color: #ff8e26;
   overflow: hidden;
 
     .priceForm{
-      position: relative;
       top: 0;
       right: 0;
       display: flex;
