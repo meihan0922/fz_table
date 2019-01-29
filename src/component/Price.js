@@ -21,9 +21,8 @@ export default class Price extends Component {
 
     constructor(props){
         super(props);
-        // this.onClick = this.onClick.bind(this);
-        this.state = {
-            status: ["show1", "show2", "show3", "show4"],//預設值class
+        this.status = ["show1", "show2", "show3", "show4"];//預設值class
+        this.state = { 
             cross:[], //儲存十字顯示的陣列
             active: -1 //是否加上active這個class
         }
@@ -31,7 +30,7 @@ export default class Price extends Component {
     
     init = () => {
         if(Number(this.props.show)>0 && Number(this.props.show)<5){
-            var classStatus = this.state.status[this.props.show-1];
+            var classStatus = this.status[this.props.show-1];
             return  classStatus;
         }
     }
@@ -79,8 +78,8 @@ export default class Price extends Component {
     render(){
         let data = ticketInfo.data[0];
         let right = this.props.rightMove;
-        let arrowRight = !!(this.props.displayRight) ? "displayBlock" : "displayNone";
-        let arrowLeft = !!(this.props.displayLeft) ? "displayBlock" : "displayNone";
+        let arrowRight = !!(this.props.displayRight) ? "" : "displayNone";
+        let arrowLeft = !!(this.props.displayLeft) ? "" : "displayNone";
         let speed = 'right ' + this.props.speed;
 
         return(

@@ -1,8 +1,65 @@
 import React, { Component } from 'react';
-import GoDateForm from './component/GoDateForm';
-import BackDateForm from './component/BackDateForm';
+import ticketInfo from './ticketInfo.json';
 import Price from './component/Price';
 import './App.scss';
+
+function GoDateForm(){
+  let data = ticketInfo.data[0].data;
+  return(
+    <div className="go-date-header">
+        {
+            data.map((info, index)=>{
+                return(
+                    <div className = "goDate" key={index}>
+                        <span className = "box">
+                            {info.goDate==="01/01(一)" ? <p className="green">2018</p> : ""}
+                            {info.goDate}
+                        </span>
+                    </div>
+                )
+            })
+        }
+    </div>
+)
+}
+
+
+function BackDateForm(props){
+  let status = ["show1", "show2", "show3", "show4"]
+  let init = () => {
+    if(Number(props.show)>0 && Number(props.show)<5){
+      var classStatus = status[props.show-1];
+      return  classStatus;
+  }
+  }
+  let data = ticketInfo.data[0].data[0].detail;
+  let speed = 'right ' + props.speed;
+  let right = props.rightMove;
+  return(
+      <div className="back-date-header">
+          <div className = "date-text">
+              <div className = "back">回程</div>
+              <div className = "go">去程</div>
+          </div>
+          <div className="backDateData">
+              <div className="backDataForm positionAbsolute" style={{transition: speed + 's' ,right: right + '%'}}>
+                  {
+                      data.map((info, index)=>{
+                          return(
+                              <div className = {"backDate " + init()} key={index}>
+                                  <span className = "box">
+                                      {info.backDate==="01/01(一)" ? <p className="green">2018</p> : ""}
+                                      {info.backDate}
+                                  </span>
+                              </div>
+                          )
+                      })
+                  }
+              </div>
+          </div>
+      </div>
+  )
+}
 
 class App extends Component {
   constructor(props){
