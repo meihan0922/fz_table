@@ -26,10 +26,8 @@ export default class BackDateForm extends Component {
     }
     render(){
         let data = ticketInfo.data[0].data[0].detail;
-        let speed = this.props.speed;
-        console.log(this.props.speed);
-        // console.log(ticketInfo.data[0].data)
-        // const {go,back}=this.props;
+        let speed = 'right ' + this.props.speed;
+        let right = this.props.rightMove;
         return(
             <div className="back-date-header">
                 <div className = "date-text">
@@ -37,7 +35,7 @@ export default class BackDateForm extends Component {
                     <div className = "go">去程</div>
                 </div>
                 <div className="backDateData">
-                    <div className="backDataForm positionAbsolute" style={{transition:  speed + 's'}}>
+                    <div className="backDataForm positionAbsolute" style={{transition: speed + 's' ,right: right + '%'}}>
                         {
                             data.map((info, index)=>{
                                 return(

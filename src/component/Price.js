@@ -19,16 +19,11 @@ export default class Price extends Component {
           }
     };
 
-
     constructor(props){
         super(props);
         // this.onClick = this.onClick.bind(this);
         this.state = {
-            status: ["show1", "show2", "show3", "show4"],
-            rightMove: 0, //移動%數
-            time: 1, //儲存左右點擊次數
-            displayRight: 1, //箭頭右 0:displayNone, 1:displayBlock
-            displayLeft: 0, //箭頭左 0:displayNone, 1:displayBlock
+            status: ["show1", "show2", "show3", "show4"],//預設值class
             cross:[], //儲存十字顯示的陣列
             active: -1 //是否加上active這個class
         }
@@ -39,76 +34,6 @@ export default class Price extends Component {
             var classStatus = this.state.status[this.props.show-1];
             return  classStatus;
         }
-        // console.log(this.props.show);
-    }
-
-    onClickRight = () => {
-        var slideSet = this.props.slide;
-        var showSet = this.props.show;
-        var right;
-        var settiming = this.state.time-1;
-        var showDisplayR;
-        // var showDisplayL;
-        var clickTimes = Math.floor((7-showSet)/slideSet);
-        //clickTimes可以按的次數
-        //settiming目前在第幾次
-        //right右移多少
-        //showDisplay切換display的block和none
-        if(this.state.time<=clickTimes){
-            settiming = this.state.time+1;
-            right = this.state.rightMove + (100/showSet)*slideSet;
-            showDisplayR = 1;
-        }else if(this.state.time>clickTimes){
-            settiming = clickTimes + 1;
-            right = (100 / showSet) * (7-showSet);
-            showDisplayR = 1;
-        }
-
-        if(this.state.time===clickTimes){
-            showDisplayR = 0;
-        }
-
-        document.querySelector(".priceForm").style.right = right + "%";
-        document.querySelector(".backDataForm").style.right = right + "%";
-
-        this.setState({
-            displayRight : showDisplayR,
-            displayLeft : 1,
-            rightMove : right,
-            time :settiming
-        })
-
-    }
-
-    onClickLeft = () => {
-        // time>=Mathfloor(7/show)
-        var slideSet = this.props.slide;
-        var showSet = this.props.show;
-        var right;
-        var settiming = this.state.time-1;
-        var showDisplayL;
-        
-        if(this.state.time>2){
-            showDisplayL = 1;
-            settiming = this.state.time-1;
-            right = this.state.rightMove -(100/showSet)*slideSet;
-        }else if(this.state.time===2){
-            showDisplayL = 1;
-            right =  0;
-            settiming = 1;
-        }
-        if(settiming===1){
-            showDisplayL = 0;
-        }
-        document.querySelector(".priceForm").style.right = right + "%";
-        document.querySelector(".backDataForm").style.right = right + "%";
-
-        this.setState({
-            displayLeft : showDisplayL,
-            displayRight : 1,
-            rightMove : right,
-            time :settiming
-        })
     }
 
     //數字三位數加逗號
@@ -152,20 +77,21 @@ export default class Price extends Component {
     }
     
     render(){
-        // console.log(this.props.slide);
         let data = ticketInfo.data[0];
-        let arrowRight = !!(this.state.displayRight) ? "displayBlock" : "displayNone";
-        let arrowLeft = !!(this.state.displayLeft) ? "displayBlock" : "displayNone";
-        let speed = this.props.speed;
+        let right = this.props.rightMove;
+        let arrowRight = !!(this.props.displayRight) ? "displayBlock" : "displayNone";
+        let arrowLeft = !!(this.props.displayLeft) ? "displayBlock" : "displayNone";
+        let speed = 'right ' + this.props.speed;
+
         return(
             <div className="price">
-                <div className={`arrowRight ${arrowRight}`} onClick={this.onClickRight}>
+                <div className={`arrowRight ${arrowRight}`} onClick={this.props.onClickRight}>
                     <i className="fas fa-angle-right"></i>
                 </div>
-                <div className={`arrowLeft ${arrowLeft}`} onClick={this.onClickLeft}>
+                <div className={`arrowLeft ${arrowLeft}`} onClick={this.props.onClickLeft}>
                     <i className="fas fa-angle-left"></i>
                 </div>
-                <div className="priceForm positionAbsolute" style={{transition: speed + 's'}}>
+                <div className="priceForm positionAbsolute" style={{transition: speed + 's' ,right: right + '%'}}>
                     {data.data.map((arr1, index1)=>{
                             return(
                             <div className="priceRow" key={index1}>
@@ -173,15 +99,16 @@ export default class Price extends Component {
                                     let id = index1*7+index2;
                                     let cross = (this.state.cross.indexOf(id)===-1) ? "" : "cross";
                                     let active = (String(id)===this.state.active) ? "active" : "";
-                                    console.log(active);
                                     let pricedata ="priceData " + this.init();
-                                    // let active = 
+                                    let changeSymbol = (String((arr2.price))==="--" ? <span>查看</span> : '--')
+
                                     return(
                                         <div className={`${cross} ${pricedata} ${active}`} id={id}
                                             key={id} onClick={this.onClick}>
                                             <span className={arr2.cheapest ? "addSaleClass box" : "box"} >
-                                                    {Number(arr2.price) ? "$" : ""}{this.toThousands(arr2.price)}
-                                                    {Number(arr2.price) ? <span>起</span> : ""}     
+                                                {Number(arr2.price) ? "$" : ""}
+                                                {Number(arr2.price) ? this.toThousands(arr2.price) : changeSymbol}
+                                                {Number(arr2.price) ? <span>起</span> : ""}     
                                             </span>
                                         </div>
                                     )
